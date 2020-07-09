@@ -1,33 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Requests\SeekerRequest;
+use App\Traits\RestRequestTrait;
+use App\Traits\SoapRequestTrait;
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
+
 
 class SeekerController extends Controller
 {
-    /** ?soap_method=QueryByName&name=spiderman
-     */
+
+    use RestRequestTrait;
+    use SoapRequestTrait;
 
     private $apple_url = "https://itunes.apple.com/";
     private $maze_url = "http://api.tvmaze.com/search/";
     private $people_url = "http://www.crcind.com/csp/samples/SOAP.Demo.cls";
 
-
-    protected function makeRequest($base_url, $qry_params)
-    {
-        $client = new Client();
-        $response = $client->get("$base_url?$qry_params");
-        $data_body = [];
-
-        if ($response->getStatusCode() == 200) {
-            $data_body = json_decode($response->getBody(), true);
-        }
-        $code = $response->getStatusCode();
-        return ["data" => $data_body, 'code' => $code];
-    }
 
     protected function createArrayApple($data)
     {
@@ -37,6 +25,7 @@ class SeekerController extends Controller
             $elements['name'] =  array_key_exists('trackName', $item) ? $item['trackName'] : $item['collectionName'];
             $elements['type'] = array_key_exists('kind', $item) ? $item['kind'] : 'ebook';
             $elements['image'] = $item['artworkUrl100'];
+            $elements['url'] = array_key_exists('previewUrl', $item)  ? $item['previewUrl'] : "";
             $elements['origin'] = 'apple';
             array_push($new_array, $elements);
         }
@@ -51,8 +40,9 @@ class SeekerController extends Controller
         foreach ($data as $item) {
             $elements['name'] = $item['show']['name'];
             $elements['type'] = 'shows';
-            $elements['image'] = $item['show']['image'];
+            $elements['image'] = $item['show']['image']['medium'] ?? "";
             $elements['origin'] = 'maze';
+            $elements['url'] = $item['show']['url'];
             array_push($new_array, $elements);
         }
         return $new_array;
@@ -61,9 +51,6 @@ class SeekerController extends Controller
 
     public function search(Request $request)
     {
-        /*$request->validate([
-            'term' => 'required|max:255'
-        ]);*/
         $search = $request->get('term');
 
         if (!$request->has('term')) {

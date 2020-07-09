@@ -27,7 +27,7 @@ class SeekerTest extends TestCase
         $response->assertJsonStructure([
             'countResult',
             'data' => [
-                '*' => ['name', 'type', 'image', 'origin']
+                '*' => ['name', 'type', 'image', 'origin', 'url']
             ]
         ])  ->assertJson(['countResult' => 80, 'data' => []])
             ->assertStatus(200);
