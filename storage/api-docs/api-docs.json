@@ -1,0 +1,39 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Seeker",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ],
+    "paths": {
+        "/api/search": {
+            "get": {
+                "summary": "Show a list with the request data",
+                "operationId": "App\\Http\\Controllers\\SeekerController::search",
+                "parameters": [
+                    {
+                        "name": "term",
+                        "in": "query",
+                        "description": "key param to search",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Show response"
+                    },
+                    "default": {
+                        "description": "Not found"
+                    }
+                }
+            }
+        }
+    }
+}

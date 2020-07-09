@@ -5,7 +5,11 @@ use App\Traits\RestRequestTrait;
 use App\Traits\SoapRequestTrait;
 use Illuminate\Http\Request;
 
-
+/**
+ * @OA\Info(title="API Seeker", version="1.0")
+ *
+ * @OA\Server(url="http://localhost:8000")
+ */
 class SeekerController extends Controller
 {
 
@@ -48,7 +52,29 @@ class SeekerController extends Controller
         return $new_array;
     }
 
-
+    /**
+     * @OA\Get(
+     *     path="/api/search",
+     *     summary="Show a list with the request data",
+     *     @OA\Parameter(
+     *          name="term",
+     *          description="key param to search",
+     *          required=true,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string"
+     *          )
+     *      ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Show response"
+     *     ),
+     *     @OA\Response(
+     *         response="default",
+     *         description="Not found"
+     *     )
+     * )
+     */
     public function search(Request $request)
     {
         $search = $request->get('term');
